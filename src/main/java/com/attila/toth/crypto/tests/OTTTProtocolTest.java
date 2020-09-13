@@ -17,7 +17,7 @@ public class OTTTProtocolTest {
 
     @BeforeClass
     public static void setup() {
-        Main.makeTable(truthTable);
+        Main.initTruthTable(truthTable);
     }
 
     @Test

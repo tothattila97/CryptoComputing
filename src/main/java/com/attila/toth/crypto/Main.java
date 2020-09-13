@@ -45,7 +45,7 @@ public class Main {
                     break;
                 case "-ottt":
                     boolean[][] truthTable = new boolean[8][8];
-                    makeTable(truthTable);
+                    initTruthTable(truthTable);
                     ImmutableTriple<Dealer, Alice, Bob> participants = initParticipants(truthTable, patienceBloodType, donorBloodType);
                     compatibility = protocolOTTP(participants.middle, participants.right);
                     break;
@@ -77,7 +77,7 @@ public class Main {
                 result.getRunTime() + "ms.");
     }
 
-    public static void makeTable(boolean[][] truthTable) {
+    public static void initTruthTable(boolean[][] truthTable) {
         //StringBuilder sBuilder = new StringBuilder("\n");
         for (int i = 0; i < 8; i ++) {
             for (int k = 7; k >= 0; k--) {
@@ -89,11 +89,11 @@ public class Main {
     }
 
     public static boolean protocolOTTP(Alice alice, Bob bob){
-        alice.calculateValue();
+        alice.computeValues();
         bob.u = alice.u;
-        bob.calculateValue();
+        bob.computeValues();
         alice.v = bob.v;
         alice.zb = bob.zb;
-        return alice.calculateOutput();
+        return alice.computeOutput();
     }
 }
