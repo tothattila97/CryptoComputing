@@ -1,13 +1,10 @@
 package com.attila.toth.crypto;
 
-public class Bob {
+import com.attila.toth.crypto.tests.Party;
+
+public class Bob extends Party {
     private boolean[][] matrixB;
-    private BloodType bloodtype;
     private int s;
-    private int n;
-    int u;
-    int v;
-    boolean zb;
 
     Bob(boolean[][] matrixB, int s, int n, BloodType bloodtype) {
         this.bloodtype = bloodtype;
@@ -16,6 +13,9 @@ public class Bob {
         this.n = n;
     }
 
+    /**
+     * Calculate v and zb locally in order to Bob can send it to ALice
+     */
     void calculateValue() {
         v = Math.floorMod(7 - bloodtype.decimal + s, (int) Math.pow(2, n));
         zb = matrixB[u][v];

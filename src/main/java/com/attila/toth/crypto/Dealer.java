@@ -3,6 +3,9 @@ package com.attila.toth.crypto;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+/**
+ * Class for the Trusted Dealer
+ */
 public class Dealer {
     int r;
     int s;

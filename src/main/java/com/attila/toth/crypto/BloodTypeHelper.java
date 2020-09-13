@@ -39,7 +39,11 @@ public class BloodTypeHelper {
      * @return Bool formula: output = A'B'F' + A'EF' + B'DF' + DEF' + A'B'C + A'CE + B'CD + CDE
      */
     public static boolean boolFormula(String donor, String patience) {
-        return orGate(Stream.of(
+        return (!(donor.charAt(0) == '1' && (patience.charAt(0) != '1'))) &&
+                (!(donor.charAt(1) == '1' && (patience.charAt(1) != '1'))) &&
+                (!(donor.charAt(2) == '1' && (patience.charAt(2) != '1')));
+
+        /*orGate(Stream.of(
                 andGate(notGate(donor.charAt(0)), notGate(donor.charAt(1)), notGate(patience.charAt(2))), // A'B'F'
                 andGate(notGate(donor.charAt(0)), patience.charAt(1) == '1', notGate(patience.charAt(2))), // A'EF'
                 andGate(notGate(donor.charAt(1)), patience.charAt(0) == '1', notGate(patience.charAt(2))), // B'DF'
@@ -48,7 +52,7 @@ public class BloodTypeHelper {
                 andGate(notGate(donor.charAt(0)), donor.charAt(2) == '1', patience.charAt(1) == '1'), // A'CE
                 andGate(notGate(donor.charAt(1)), donor.charAt(2) == '1', patience.charAt(0) == '1'), //  B'CD
                 andGate(donor.charAt(2) == '1', patience.charAt(0) == '1', patience.charAt(1) == '1') // CDE
-        ).collect(Collectors.toList()));
+        ).collect(Collectors.toList()));*/
     }
 
     private static boolean andGate(boolean input1, boolean input2, boolean input3) {

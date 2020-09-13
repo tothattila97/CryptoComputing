@@ -90,13 +90,10 @@ public class Main {
 
     public static boolean protocolOTTP(Alice alice, Bob bob){
         alice.calculateValue();
-        // Alice sends u to Bob
         bob.u = alice.u;
         bob.calculateValue();
-        // Bob sends v, zb to Alice
         alice.v = bob.v;
         alice.zb = bob.zb;
-        // Alice computes the output
         return alice.calculateOutput();
     }
 }
