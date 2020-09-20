@@ -17,6 +17,7 @@ There are 3 switch so far:
 * -lookup
 * -bool
 * -ottt
+* -bedoza
 
 Pass the switch and the two blood types as string arguments:
 ```
