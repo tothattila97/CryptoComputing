@@ -4,6 +4,9 @@ import com.attila.toth.crypto.BloodType;
 
 import java.security.SecureRandom;
 
+/**
+ * This class called Party encapsulates the common fields and methods for Alice and Bob
+ */
 abstract class Party {
     BloodType bloodType;
 
@@ -87,22 +90,20 @@ abstract class Party {
 
     abstract void initInputWires();
 
-    abstract void computeValues();
-
     public void xor(int layer, int wire) {
         circuit[layer][wire] = circuit[layer - 1][wire] ^ circuit[layer - 1][wire + 1];
     }
 
-    public void xorWithConstant(int layer, int wire, boolean c) {
+    /*public void xorWithConstant(int layer, int wire, boolean c) {
         circuit[layer][wire] = circuit[layer - 1][wire] ^ c;
-    }
+    }*/
 
     public void not(int layer, int wire) {
         circuit[layer][wire] = !circuit[layer - 1][wire];
     }
 
-    public void andWithConstant(int layer, int wire, boolean c) {
+    /*public void andWithConstant(int layer, int wire, boolean c) {
         circuit[layer][wire] = circuit[layer - 1][wire] && c;
-    }
+    }*/
 
 }

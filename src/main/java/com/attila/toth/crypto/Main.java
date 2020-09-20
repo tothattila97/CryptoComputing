@@ -103,6 +103,7 @@ public class Main {
         com.attila.toth.crypto.bedoza.Dealer dealer = new com.attila.toth.crypto.bedoza.Dealer();
         dealer.generateTriplets();
 
+        // The circuit is based on the Boolean formula in the BloodTypeHelper class boolFormula() function
         com.attila.toth.crypto.bedoza.Alice alice = new com.attila.toth.crypto.bedoza.Alice(6,6,patienceBloodType);
         com.attila.toth.crypto.bedoza.Bob bob = new com.attila.toth.crypto.bedoza.Bob(6,6,donorBloodType);
 

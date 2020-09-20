@@ -10,7 +10,6 @@ public class Alice extends Party {
     private boolean va;
     private boolean wa;
     public boolean[] xbs;
-    boolean output;
 
     public Alice(int numberOfLayers, int numberOfWires, BloodType bloodType) {
         this.bloodType = bloodType;
@@ -36,11 +35,6 @@ public class Alice extends Party {
         circuit[0][1] = bobInputs[0];
         circuit[0][3] = bobInputs[1];
         circuit[0][5] = bobInputs[2];
-    }
-
-    @Override
-    public void computeValues() {
-
     }
 
     public void setTripletFromDealer(boolean ua, boolean va, boolean wa){

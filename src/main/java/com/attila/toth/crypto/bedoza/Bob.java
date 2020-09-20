@@ -38,11 +38,6 @@ public class Bob extends Party {
         circuit[0][4] = aliceInputs[2];
     }
 
-    @Override
-    public void computeValues() {
-
-    }
-
     public void setTripletFromDealer(boolean ub, boolean vb, boolean wb){
         this.ub = ub;
         this.vb = vb;
