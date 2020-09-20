@@ -1,5 +1,9 @@
 package com.attila.toth.crypto;
 
+import com.attila.toth.crypto.bedoza.Alice;
+import com.attila.toth.crypto.bedoza.Bob;
+import com.attila.toth.crypto.bedoza.Dealer;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,6 +80,33 @@ public class BloodTypeHelper {
         if (label.equals(BloodType.B_POSITIVE.label)) return BloodType.B_POSITIVE;
         if (label.equals(BloodType.AB_NEGATIVE.label)) return BloodType.AB_NEGATIVE;
         return BloodType.AB_POSITIVE;
+    }
+
+    static void andOfTwoWires(Alice alice, Bob bob, Dealer dealer, int layer, int wire){
+        dealer.generateTriplets();
+        alice.setTripletFromDealer(dealer.ua, dealer.va, dealer.wa);
+        bob.setTripletFromDealer(dealer.ub, dealer.vb, dealer.wb);
+
+        // Run sub protocol: compute d = x XOR u and e = y XOR v
+        alice.setDa( alice.getCircuit()[layer-1][wire] ^ alice.isUa());
+        alice.setEa( alice.getCircuit()[layer-1][wire+1] ^ alice.isVa());
+        bob.setDb(bob.getCircuit()[layer-1][wire] ^ bob.isUb());
+        bob.setEb(bob.getCircuit()[layer-1][wire+1] ^ bob.isVb());
+
+        // Run sub protocol: open d and e values
+        alice.setDb(bob.isDb());
+        alice.setEb(bob.isEb());
+        bob.setDa(alice.isDa());
+        bob.setEa(alice.isEa());
+
+        alice.setD(alice.isDa() ^ alice.isDb());
+        alice.setE(alice.isEa() ^ alice.isEb());
+        bob.setD(bob.isDa() ^ bob.isDb());
+        bob.setE(bob.isEa() ^ bob.isEb());
+
+        //Run sub protocol: calculate z value
+        alice.circuit[layer][wire] = alice.isWa() ^ (alice.isE() & alice.circuit[layer-1][wire]) ^ (alice.isD() & alice.circuit[layer-1][wire+1]) ^ (alice.isE() & alice.isD());
+        bob.circuit[layer][wire] = bob.isWb() ^ (bob.isE() & bob.circuit[layer-1][wire]) ^ (bob.isD() & bob.circuit[layer-1][wire+1]);  //^ (bob.isE() & bob.isD())
     }
 
 }

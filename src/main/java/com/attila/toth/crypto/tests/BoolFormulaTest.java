@@ -10,7 +10,7 @@ public class BoolFormulaTest {
 
     @Test
     public void whenDonorZeroPositive() {
-        TestCase.assertTrue(BloodTypeHelper.boolFormula(BloodType.ZERO_POSITIVE.binary, BloodType.ZERO_POSITIVE.binary));
+        assertTrue(BloodTypeHelper.boolFormula(BloodType.ZERO_POSITIVE.binary, BloodType.ZERO_POSITIVE.binary));
         assertFalse(BloodTypeHelper.boolFormula(BloodType.ZERO_POSITIVE.binary, BloodType.ZERO_NEGATIVE.binary));
         assertTrue(BloodTypeHelper.boolFormula(BloodType.ZERO_POSITIVE.binary, BloodType.A_POSITIVE.binary));
         assertFalse(BloodTypeHelper.boolFormula(BloodType.ZERO_POSITIVE.binary, BloodType.A_NEGATIVE.binary));

@@ -1,10 +1,12 @@
-package com.attila.toth.crypto;
+package com.attila.toth.crypto.ottt;
+
+import com.attila.toth.crypto.BloodType;
 
 public class Alice extends Party {
     private boolean[][] matrixA;
     private int r;
 
-    Alice(boolean[][] matrixA, int r, int n, BloodType bloodtype) {
+    public Alice(boolean[][] matrixA, int r, int n, BloodType bloodtype) {
         this.r = r;
         this.n = n;
         this.bloodtype = bloodtype;
@@ -14,14 +16,14 @@ public class Alice extends Party {
     /**
      * Calculate the u value locally
      */
-    void computeValues() {
+    public void computeValues() {
         u = Math.floorMod(7 - bloodtype.decimal + r, (int) Math.pow(2, n));
     }
 
     /**
      * @return Returns with the calculated output, called z in the protocol specification
      */
-    boolean computeOutput() {
+    public boolean computeOutput() {
         return matrixA[u][v] ^ zb;
     }
 }

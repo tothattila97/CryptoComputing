@@ -1,4 +1,4 @@
-package com.attila.toth.crypto;
+package com.attila.toth.crypto.ottt;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -7,13 +7,13 @@ import java.util.Arrays;
  * Class for the Trusted Dealer
  */
 public class Dealer {
-    int r;
-    int s;
-    int n;
-    boolean[][] matrixA;
-    boolean[][] matrixB;
+    public int r;
+    public int s;
+    public int n;
+    public boolean[][] matrixA;
+    public boolean[][] matrixB;
 
-    Dealer(boolean[][] truthTable, int n) {
+    public Dealer(boolean[][] truthTable, int n) {
         this.n = n;
         int matrixLen = (int) Math.pow(2, n);
         r = new SecureRandom().nextInt(matrixLen);

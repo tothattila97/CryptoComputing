@@ -1,4 +1,4 @@
-package com.attila.toth.crypto;
+package com.attila.toth.crypto.ottt;
 
 import com.attila.toth.crypto.BloodType;
 
@@ -8,9 +8,9 @@ import com.attila.toth.crypto.BloodType;
 abstract class Party {
     BloodType bloodtype;
     int n;
-    int u;
-    int v;
-    boolean zb;
+    public int u;
+    public int v;
+    public boolean zb;
 
     abstract void computeValues();
 }
