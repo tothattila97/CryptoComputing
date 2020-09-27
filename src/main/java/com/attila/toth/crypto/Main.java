@@ -6,6 +6,7 @@ import com.attila.toth.crypto.ottt.Dealer;
 import com.attila.toth.crypto.tests.BedozaProtocolTest;
 import com.attila.toth.crypto.tests.BoolFormulaTest;
 import com.attila.toth.crypto.tests.OTTTProtocolTest;
+import com.attila.toth.crypto.tests.ObliviousTransferProtocolTest;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
@@ -20,7 +21,7 @@ public class Main {
             if (args.length == 0) {
                 JUnitCore junit = new JUnitCore();
                 junit.addListener(new TextListener(System.out));
-                Result run = junit.run(BoolFormulaTest.class, OTTTProtocolTest.class, BedozaProtocolTest.class);
+                Result run = junit.run(BoolFormulaTest.class, /*OTTTProtocolTest.class, BedozaProtocolTest.class,*/ ObliviousTransferProtocolTest.class);
                 resultReport(run);
                 return;
             } else if (args.length != 3) {
@@ -52,6 +53,9 @@ public class Main {
                     break;
                 case "-bedoza":
                     compatibility = protocolBEDOZA(patienceBloodType, donorBloodType);
+                    break;
+                case "-ot":
+                    compatibility = protocolObliviousTransfer(patienceBloodType, donorBloodType);
                     break;
                 default:
                     break;
@@ -104,8 +108,8 @@ public class Main {
         dealer.generateTriplets();
 
         // The circuit is based on the Boolean formula in the BloodTypeHelper class boolFormula() function
-        com.attila.toth.crypto.bedoza.Alice alice = new com.attila.toth.crypto.bedoza.Alice(6,6,patienceBloodType);
-        com.attila.toth.crypto.bedoza.Bob bob = new com.attila.toth.crypto.bedoza.Bob(6,6,donorBloodType);
+        com.attila.toth.crypto.bedoza.Alice alice = new com.attila.toth.crypto.bedoza.Alice(6, 6, patienceBloodType);
+        com.attila.toth.crypto.bedoza.Bob bob = new com.attila.toth.crypto.bedoza.Bob(6, 6, donorBloodType);
 
         // Initialize Alice and Bob wires
         int layer = 0;
@@ -116,38 +120,58 @@ public class Main {
 
         // Compute the AND
         layer++;
-        for (int i = 0; i< 6;i+=2){
-            BloodTypeHelper.andOfTwoWires(alice,bob,dealer, layer,i);
+        for (int i = 0; i < 6; i += 2) {
+            BloodTypeHelper.andOfTwoWires(alice, bob, dealer, layer, i);
         }
 
-        // Copy the outputs to the upward wires
+        // Copy the outputs of the previous layer to the next layer upper wires
         layer++;
-        alice.circuit[layer][0] = alice.circuit[layer-1][0];
-        alice.circuit[layer][1] = alice.circuit[layer-1][2];
-        alice.circuit[layer][2] = alice.circuit[layer-1][4];
-        bob.circuit[layer][0] = bob.circuit[layer-1][0];
-        bob.circuit[layer][1] = bob.circuit[layer-1][2];
-        bob.circuit[layer][2] = bob.circuit[layer-1][4];
+        alice.circuit[layer][0] = alice.circuit[layer - 1][0];
+        alice.circuit[layer][1] = alice.circuit[layer - 1][2];
+        alice.circuit[layer][2] = alice.circuit[layer - 1][4];
+        bob.circuit[layer][0] = bob.circuit[layer - 1][0];
+        bob.circuit[layer][1] = bob.circuit[layer - 1][2];
+        bob.circuit[layer][2] = bob.circuit[layer - 1][4];
 
 
         // Compute NOT for all wire
         layer++;
-        for (int i = 0; i < 3; i++){
-            alice.not(layer,i);
-            bob.not(layer,i);
+        for (int i = 0; i < 3; i++) {
+            alice.not(layer, i);
+            bob.not(layer, i);
         }
 
         // Layer 4 compute another AND, the rest copied to an upper wire
         layer++;
-        BloodTypeHelper.andOfTwoWires(alice,bob,dealer,layer,0);
-        alice.circuit[layer][1] = alice.circuit[layer-1][2];
-        bob.circuit[layer][1] = bob.circuit[layer-1][2];
+        BloodTypeHelper.andOfTwoWires(alice, bob, dealer, layer, 0);
+        alice.circuit[layer][1] = alice.circuit[layer - 1][2];
+        bob.circuit[layer][1] = bob.circuit[layer - 1][2];
 
         // Layer 5 last AND calculation
         layer++;
-        BloodTypeHelper.andOfTwoWires(alice,bob,dealer,layer,0);
+        BloodTypeHelper.andOfTwoWires(alice, bob, dealer, layer, 0);
 
         // Calculate output in Alice
-        return alice.circuit[alice.getNumberOfLayers()-1][0] ^ bob.circuit[bob.getNumberOfLayers()-1][0];
+        return alice.circuit[alice.getNumberOfLayers() - 1][0] ^ bob.circuit[bob.getNumberOfLayers() - 1][0];
+    }
+
+    public static boolean protocolObliviousTransfer(BloodType donorBloodType, BloodType patienceBloodType) {
+        com.attila.toth.crypto.ot.Alice alice = new com.attila.toth.crypto.ot.Alice(patienceBloodType);
+        com.attila.toth.crypto.ot.Bob bob = new com.attila.toth.crypto.ot.Bob(donorBloodType);
+
+        // Choose phrase, generate public keys, group generator and send it to Bob
+        alice.generatePublicKeys();
+        bob.setPks(alice.getPks());
+        bob.setG(alice.getG());
+        bob.setQ(alice.getQ());
+        bob.setP(alice.getP());
+
+        // Transfer phase, Bob generates the cipher texts for the input messages and send it to Alice
+        bob.generateEncryptedMessages();
+        alice.setEncryptedMessages(bob.getEncryptedMessages());
+
+        // Retrieve phase, Alice compute the output
+        alice.computeOutput();
+        return alice.output;
     }
 }

@@ -27,9 +27,9 @@ public class Bob extends Party {
             xas[i] = random.nextBoolean();
         }
 
-        circuit[0][1] = (bloodType.binary.charAt(0) == "0".charAt(0)) == xas[0];
-        circuit[0][3] = (bloodType.binary.charAt(1) == "0".charAt(0)) == xas[1];
-        circuit[0][5] = (bloodType.binary.charAt(2) == "0".charAt(0)) == xas[2];
+        circuit[0][1] = (bloodType.binary.charAt(0) == '1') == xas[0];
+        circuit[0][3] = (bloodType.binary.charAt(1) == '1') == xas[1];
+        circuit[0][5] = (bloodType.binary.charAt(2) == '1') == xas[2];
     }
 
     public void setAliceInputWires(boolean[] aliceInputs) {

@@ -104,7 +104,7 @@ public class BloodTypeHelper {
         bob.setD(bob.isDa() ^ bob.isDb());
         bob.setE(bob.isEa() ^ bob.isEb());
 
-        //Run sub protocol: calculate z value
+        //Run sub protocol: calculate z value : z = [w] XOR e AND [x] XOR d AND [y] XOR e and d
         alice.circuit[layer][wire] = alice.isWa() ^ (alice.isE() & alice.circuit[layer-1][wire]) ^ (alice.isD() & alice.circuit[layer-1][wire+1]) ^ (alice.isE() & alice.isD());
         bob.circuit[layer][wire] = bob.isWb() ^ (bob.isE() & bob.circuit[layer-1][wire]) ^ (bob.isD() & bob.circuit[layer-1][wire+1]);  //^ (bob.isE() & bob.isD())
     }
