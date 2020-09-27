@@ -18,6 +18,7 @@ There are 3 switch so far:
 * -bool
 * -ottt
 * -bedoza
+* -ot
 
 Pass the switch and the two blood types as string arguments:
 ```
