@@ -16,6 +16,7 @@ abstract class Party {
     int numberOfWires;
     public boolean[][] circuit;
     SecureRandom random = new SecureRandom();
+
     private boolean d;
     private boolean da;
     private boolean db;

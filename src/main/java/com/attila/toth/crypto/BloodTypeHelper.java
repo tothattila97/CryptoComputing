@@ -3,7 +3,11 @@ package com.attila.toth.crypto;
 import com.attila.toth.crypto.bedoza.Alice;
 import com.attila.toth.crypto.bedoza.Bob;
 import com.attila.toth.crypto.bedoza.Dealer;
+import com.attila.toth.crypto.garbled.Circuit;
+import com.attila.toth.crypto.garbled.Wire;
 
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,16 +86,16 @@ public class BloodTypeHelper {
         return BloodType.AB_POSITIVE;
     }
 
-    static void andOfTwoWires(Alice alice, Bob bob, Dealer dealer, int layer, int wire){
+    static void andOfTwoWires(Alice alice, Bob bob, Dealer dealer, int layer, int wire) {
         dealer.generateTriplets();
         alice.setTripletFromDealer(dealer.ua, dealer.va, dealer.wa);
         bob.setTripletFromDealer(dealer.ub, dealer.vb, dealer.wb);
 
         // Run sub protocol: compute d = x XOR u and e = y XOR v
-        alice.setDa( alice.getCircuit()[layer-1][wire] ^ alice.isUa());
-        alice.setEa( alice.getCircuit()[layer-1][wire+1] ^ alice.isVa());
-        bob.setDb(bob.getCircuit()[layer-1][wire] ^ bob.isUb());
-        bob.setEb(bob.getCircuit()[layer-1][wire+1] ^ bob.isVb());
+        alice.setDa(alice.getCircuit()[layer - 1][wire] ^ alice.isUa());
+        alice.setEa(alice.getCircuit()[layer - 1][wire + 1] ^ alice.isVa());
+        bob.setDb(bob.getCircuit()[layer - 1][wire] ^ bob.isUb());
+        bob.setEb(bob.getCircuit()[layer - 1][wire + 1] ^ bob.isVb());
 
         // Run sub protocol: open d and e values
         alice.setDb(bob.isDb());
@@ -105,8 +109,23 @@ public class BloodTypeHelper {
         bob.setE(bob.isEa() ^ bob.isEb());
 
         //Run sub protocol: calculate z value : z = [w] XOR e AND [x] XOR d AND [y] XOR e and d
-        alice.circuit[layer][wire] = alice.isWa() ^ (alice.isE() & alice.circuit[layer-1][wire]) ^ (alice.isD() & alice.circuit[layer-1][wire+1]) ^ (alice.isE() & alice.isD());
-        bob.circuit[layer][wire] = bob.isWb() ^ (bob.isE() & bob.circuit[layer-1][wire]) ^ (bob.isD() & bob.circuit[layer-1][wire+1]);  //^ (bob.isE() & bob.isD())
+        alice.circuit[layer][wire] = alice.isWa() ^ (alice.isE() & alice.circuit[layer - 1][wire]) ^ (alice.isD() & alice.circuit[layer - 1][wire + 1]) ^ (alice.isE() & alice.isD());
+        bob.circuit[layer][wire] = bob.isWb() ^ (bob.isE() & bob.circuit[layer - 1][wire]) ^ (bob.isD() & bob.circuit[layer - 1][wire + 1]);  //^ (bob.isE() & bob.isD())
+    }
+
+    public static void generateKeysForInputWires(ArrayList<Wire> wires) {
+        SecureRandom rand = new SecureRandom(SecureRandom.getSeed(256));
+        for (int j = 0; j < Circuit.WIRE_COUNT; j++) {
+            StringBuilder k0 = new StringBuilder();
+            for (int i = 0; i < 128; i++) {
+                k0.append(rand.nextInt(2));
+            }
+            StringBuilder k1 = new StringBuilder();
+            for (int i = 0; i < 128; i++) {
+                k1.append(rand.nextInt(2));
+            }
+            wires.add(new Wire(k0.toString(), k1.toString()));
+        }
     }
 
 }

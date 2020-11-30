@@ -3,15 +3,13 @@ package com.attila.toth.crypto;
 import com.attila.toth.crypto.ottt.Alice;
 import com.attila.toth.crypto.ottt.Bob;
 import com.attila.toth.crypto.ottt.Dealer;
-import com.attila.toth.crypto.tests.BedozaProtocolTest;
-import com.attila.toth.crypto.tests.BoolFormulaTest;
-import com.attila.toth.crypto.tests.OTTTProtocolTest;
-import com.attila.toth.crypto.tests.ObliviousTransferProtocolTest;
+import com.attila.toth.crypto.tests.*;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
+import java.math.BigInteger;
 import java.util.Objects;
 
 public class Main {
@@ -21,7 +19,8 @@ public class Main {
             if (args.length == 0) {
                 JUnitCore junit = new JUnitCore();
                 junit.addListener(new TextListener(System.out));
-                Result run = junit.run(BoolFormulaTest.class, /*OTTTProtocolTest.class, BedozaProtocolTest.class,*/ ObliviousTransferProtocolTest.class);
+                Result run = junit.run(BoolFormulaTest.class, /*OTTTProtocolTest.class, BedozaProtocolTest.class*//*, ObliviousTransferProtocolTest.class,*/ GarbledCircuitProtocolTest.class
+                        /*HomomorphicEncryptionProtocolTest.class*/);
                 resultReport(run);
                 return;
             } else if (args.length != 3) {
@@ -56,6 +55,12 @@ public class Main {
                     break;
                 case "-ot":
                     compatibility = protocolObliviousTransfer(patienceBloodType, donorBloodType);
+                    break;
+                case "-garbled":
+                    compatibility = protocolGarbledCircuit(patienceBloodType, donorBloodType);
+                    break;
+                case "-homomorphic":
+                    compatibility = protocolHomomorphicEncryption(patienceBloodType, donorBloodType);
                     break;
                 default:
                     break;
@@ -173,5 +178,26 @@ public class Main {
         // Retrieve phase, Alice compute the output
         alice.computeOutput();
         return alice.output;
+    }
+
+    public static boolean protocolGarbledCircuit(BloodType donorBloodType, BloodType patienceBloodType){
+        com.attila.toth.crypto.garbled.Alice alice = new com.attila.toth.crypto.garbled.Alice(patienceBloodType);
+        com.attila.toth.crypto.garbled.Bob bob = new com.attila.toth.crypto.garbled.Bob(donorBloodType);
+        bob.receiveXFromAlice(alice.computeEncodingX());
+        bob.OT(alice.getGarbledCircuit().encoding);
+        bob.evaluateCircuit(alice.getGarbledCircuit().getGates());
+        alice.receiveZFromBob(bob.sendZToALice());
+        alice.computeOutput();
+        return alice.isOutput();
+    }
+
+    public static boolean protocolHomomorphicEncryption(BloodType donorBloodType, BloodType patienceBloodType){
+        com.attila.toth.crypto.homomorphic.Alice alice = new com.attila.toth.crypto.homomorphic.Alice(patienceBloodType);
+        com.attila.toth.crypto.homomorphic.Bob bob = new com.attila.toth.crypto.homomorphic.Bob(donorBloodType);
+
+        BigInteger[] m1 = alice.getMessage();  // compute and encrypt the message based on the blood type
+        BigInteger m2 = bob.transfer(m1);  // Bob applies the function using his input and send back a single ciphertext containing the resulting bit
+        alice.decryptAndSetOutput(m2); // Alice decrypts and learns the result.
+        return  alice.isOutput();
     }
 }
